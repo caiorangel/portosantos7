@@ -13,16 +13,10 @@
   status = 200
 
 [[redirects]]
-  from = "/api/*"
+  from = "/api/payment/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-[[headers]]
-  for = "/*"
-    [headers.values]
-    Access-Control-Allow-Origin = "https://estacionamentoportosantos.com.br"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
+  force = true
 
 [build.environment]
   NODE_VERSION = "18"
