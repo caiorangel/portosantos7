@@ -13,19 +13,20 @@
   status = 200
 
 [[redirects]]
-  from = "/.netlify/functions/*"
+  from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-  force = true
 
 [[headers]]
-  for = "/.netlify/functions/*"
+  for = "/*"
     [headers.values]
-    Access-Control-Allow-Origin = "https://estacionamentoportosantos.com.br"
+    Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [build.environment]
   NODE_VERSION = "18"
-  MERCADOPAGO_ACCESS_TOKEN = "TEST-3286097988616751-102919-aa9578e50ee02d46daa50bf06f4576cc-96981334"
-  URL = "https://estacionamentoportosantos.com.br"
+
+# Remova estas variáveis daqui e coloque nas variáveis de ambiente do Netlify
+# MERCADOPAGO_ACCESS_TOKEN = "TEST-3286097988616751-102919-aa9578e50ee02d46daa50bf06f4576cc-96981334"
+# URL = "https://estacionamentoportosantos.com.br"
