@@ -1,4 +1,4 @@
-import mercadopago from 'mercadopago';
+const mercadopago = require('mercadopago');
 
 export const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
