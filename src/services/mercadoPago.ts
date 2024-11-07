@@ -5,7 +5,8 @@ class MercadoPagoService {
   private apiUrl: string;
 
   constructor() {
-    this.apiUrl = '/api/payment/create-preference';
+    // Usando o caminho direto da função
+    this.apiUrl = '/.netlify/functions/create-preference';
   }
 
   async createAndRedirect(data: PaymentPreference): Promise<void> {
@@ -57,6 +58,5 @@ class MercadoPagoService {
   }
 }
 
-// Exportando tanto a classe quanto a instância
 export const mercadoPagoService = new MercadoPagoService();
 export default MercadoPagoService;
