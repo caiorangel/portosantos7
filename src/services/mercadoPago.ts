@@ -1,17 +1,18 @@
+// src/services/mercadoPago.ts
 import { PaymentPreference } from '../types/payment';
 
 class MercadoPagoService {
   private apiUrl: string;
 
   constructor() {
-    // Use the current domain for API calls
-    const domain = window.location.origin;
-    this.apiUrl = `${domain}/.netlify/functions/create-preference`;
+    // Use a URL do Netlify diretamente
+    this.apiUrl = 'https://cute-blancmange-4731ab.netlify.app/.netlify/functions/create-preference';
   }
 
   async createAndRedirect(data: PaymentPreference): Promise<void> {
     try {
-      console.log('Creating payment preference...');
+      console.log('Creating payment preference...', data);
+      
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
@@ -32,22 +33,27 @@ class MercadoPagoService {
             booking_timestamp: new Date().toISOString(),
             source: 'website'
           }
-        }),
-        credentials: 'same-origin'
+        })
       });
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response:', errorText);
-        throw new Error('Failed to create preference');
+        throw new Error(`Failed to create preference: ${errorText}`);
       }
 
-      const { init_point } = await response.json();
-      console.log('Redirecting to:', init_point);
-      window.location.href = init_point;
+      const result = await response.json();
+      console.log('Payment preference created:', result);
+
+      if (!result.init_point) {
+        throw new Error('No init_point received from server');
+      }
+
+      console.log('Redirecting to:', result.init_point);
+      window.location.href = result.init_point;
     } catch (error) {
       console.error('Payment error:', error);
-      throw new Error('Failed to create payment preference');
+      throw error;
     }
   }
 }
