@@ -1,71 +1,77 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import mercadopago from 'mercadopago';
 
 export const handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { 
-      statusCode: 405, 
+    return {
+      statusCode: 405,
       body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
 
   try {
-    const { packageNights, price, customerData } = JSON.parse(event.body);
+    const data = JSON.parse(event.body);
+    console.log('Dados recebidos:', data);
 
-    const client = new MercadoPagoConfig({ 
-      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
+    // Inicializar o SDK do Mercado Pago
+    mercadopago.configure({
+      access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
     });
 
-    const preference = new Preference(client);
-    const result = await preference.create({
-      items: [
-        {
-          title: `Pacote ${packageNights} Noites - Estacionamento Porto Santos`,
-          quantity: 1,
-          currency_id: 'BRL',
-          unit_price: price,
-        },
-      ],
-      payer: {
-        name: customerData.name,
-        email: customerData.email,
-        phone: {
-          number: customerData.phone
-        }
-      },
-      metadata: {
-        licensePlate: customerData.licensePlate,
-        startDate: customerData.startDate,
-        packageNights: packageNights
-      },
+    // Verificar se os dados necessários estão presentes
+    if (!data.items || !data.payer || !data.payer.email) {
+      console.error('Dados insuficientes fornecidos');
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Dados insuficientes fornecidos' }),
+      };
+    }
+
+    const preferenceData = {
+      items: data.items,
+      payer: data.payer,
+      metadata: data.metadata,
       back_urls: {
-        success: `${process.env.URL}/success`,
-        failure: `${process.env.URL}/failure`,
-        pending: `${process.env.URL}/pending`
+        success: 'https://estacionamentoportosantos.com.br/success',
+        failure: 'https://estacionamentoportosantos.com.br/failure',
+        pending: 'https://estacionamentoportosantos.com.br/pending'
       },
       auto_return: 'approved',
-    });
+      statement_descriptor: "ESTACIONAMENTO PORTO SANTOS"
+    };
+
+    const response = await mercadopago.preferences.create(preferenceData);
 
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ preferenceId: result.id })
+      body: JSON.stringify({
+        init_point: response.body.init_point,
+        id: response.body.id
+      })
     };
+
   } catch (error) {
-    console.error('Error creating preference:', error);
+    console.error('Erro:', error);
     return {
       statusCode: 500,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ error: 'Error creating payment preference' })
+      body: JSON.stringify({
+        error: 'Error creating payment preference',
+        details: error.message
+      })
     };
   }
 };
