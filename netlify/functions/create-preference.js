@@ -1,86 +1,49 @@
-// netlify/functions/create-preference.js
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 const handler = async (event) => {
-  // Headers CORS
-  const headers = {
-    'Access-Control-Allow-Origin': 'https://estacionamentoportosantos.com.br',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Content-Type': 'application/json'
-  };
-
-  // Tratamento do preflight request
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 204,
-      headers,
-      body: ''
+      headers: {
+        'Content-Type': 'application/json'
+      }
     };
   }
 
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers,
       body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
 
   try {
-    console.log('1. Iniciando criação de preferência');
     const data = JSON.parse(event.body);
-    console.log('2. Dados recebidos:', data);
-
-    // Verifica se o token está configurado
-    if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
-      throw new Error('Token do Mercado Pago não configurado');
-    }
+    console.log('Dados recebidos:', data);
 
     const client = new MercadoPagoConfig({ 
       accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
     });
 
     const preference = new Preference(client);
-    
-    const baseUrl = process.env.SITE_URL || 'https://estacionamentoportosantos.com.br';
-    
-    const preferenceData = {
-      items: [{
-        title: `Pacote ${data.packageNights} Noites - Estacionamento Porto Santos`,
-        quantity: 1,
-        currency_id: 'BRL',
-        unit_price: data.price,
-      }],
-      payer: {
-        name: data.customerData.name,
-        email: data.customerData.email,
-        phone: {
-          number: data.customerData.phone
-        }
-      },
-      metadata: {
-        licensePlate: data.customerData.licensePlate,
-        startDate: data.customerData.startDate,
-        packageNights: data.packageNights
-      },
+    const result = await preference.create({
+      items: data.items,
+      payer: data.payer,
+      metadata: data.metadata,
       back_urls: {
-        success: `${baseUrl}/success`,
-        failure: `${baseUrl}/failure`,
-        pending: `${baseUrl}/pending`
+        success: 'https://estacionamentoportosantos.com.br/success',
+        failure: 'https://estacionamentoportosantos.com.br/failure',
+        pending: 'https://estacionamentoportosantos.com.br/pending'
       },
       auto_return: 'approved',
       statement_descriptor: "ESTACIONAMENTO PORTO SANTOS"
-    };
-
-    console.log('3. Criando preferência com dados:', preferenceData);
-    
-    const result = await preference.create(preferenceData);
-    console.log('4. Preferência criada:', result);
+    });
 
     return {
       statusCode: 200,
-      headers,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         init_point: result.init_point,
         id: result.id
@@ -88,11 +51,12 @@ const handler = async (event) => {
     };
 
   } catch (error) {
-    console.error('Erro detalhado:', error);
-    
+    console.error('Erro:', error);
     return {
       statusCode: 500,
-      headers,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         error: 'Error creating payment preference',
         details: error.message
