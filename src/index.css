@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 221 90% 98%;
+    --primary-dark: 221 90% 95%;
+    --secondary: 210 100% 12%;
+    --accent: 142 76% 36%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply antialiased text-gray-900;
+  }
+
+  /* Fix date input height on iOS */
+  input[type="date"] {
+    min-height: 44px;
+    line-height: normal;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/95 backdrop-blur-lg border border-white/20 shadow-lg
+           hover:shadow-xl transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-green-500 to-green-600 
+           hover:from-green-600 hover:to-green-700 
+           text-white font-medium px-6 py-3 rounded-full 
+           transition-all duration-300 shadow-lg hover:shadow-xl 
+           transform hover:-translate-y-0.5 
+           focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+           active:transform active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-white/90 backdrop-blur-sm border border-gray-200
+           text-gray-800 font-medium px-6 py-3 rounded-full 
+           hover:bg-white hover:border-gray-300 transition-all duration-300
+           focus:ring-2 focus:ring-gray-200 focus:ring-offset-2;
+  }
+
+  .feature-card {
+    @apply relative overflow-hidden rounded-2xl p-8 
+           bg-gradient-to-br from-white to-gray-50
+           hover:shadow-xl hover:-translate-y-1 
+           transition-all duration-500 ease-out
+           border border-gray-100;
+  }
+
+  .nav-link {
+    @apply relative text-sm font-medium transition-colors duration-300
+           after:absolute after:bottom-0 after:left-0 after:right-0
+           after:h-0.5 after:bg-current after:transform after:scale-x-0
+           after:transition-transform after:duration-300
+           hover:after:scale-x-100;
+  }
+
+  /* Fix input icons on mobile */
+  .input-icon-wrapper {
+    @apply relative;
+  }
+
+  .input-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none z-10;
+  }
+
+  .input-with-icon {
+    @apply pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none;
+    padding-left: 2.5rem !important;
+    min-height: 44px;
+  }
+}
+
+/* Mobile-first text alignment */
+@screen md {
+  .md\:text-left {
+    text-align: left;
+  }
+}
+
+/* Gallery Transitions */
+.gallery-slide {
+  @apply absolute inset-0 transition-opacity duration-300;
+}
+
+.gallery-slide-enter {
+  @apply opacity-0;
+}
+
+.gallery-slide-enter-active {
+  @apply opacity-100;
+}
+
+.gallery-slide-exit {
+  @apply opacity-100;
+}
+
+.gallery-slide-exit-active {
+  @apply opacity-0;
+}
