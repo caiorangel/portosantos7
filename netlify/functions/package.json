@@ -1,0 +1,13 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "Funções Netlify para integração com Mercado Pago",
+  "main": "create-preference.js",
+  "dependencies": {
+    "mercadopago": "^1.5.15"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "",
+  "license": "ISC"
+}
