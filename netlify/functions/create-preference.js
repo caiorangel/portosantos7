@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+const mercadopago = require('mercadopago');
 
 const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
