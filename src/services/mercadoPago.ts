@@ -6,7 +6,7 @@ class MercadoPagoService {
 
   constructor() {
     // Usando o caminho direto da função
-    this.apiUrl = '/.netlify/functions/create-preference';
+    this.apiUrl = '/.netlify/functions/create-preference.js';
   }
 
   async createAndRedirect(data: PaymentPreference): Promise<void> {
